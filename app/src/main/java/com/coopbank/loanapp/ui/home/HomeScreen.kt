@@ -51,28 +51,39 @@ fun HomeScreen(
         Spacer(modifier = Modifier.height(24.dp))
 
         // Active Loans Section
-        Text(
-            text = "Active Loans",
-            modifier = Modifier.fillMaxWidth(),
-            textAlign = TextAlign.Center,
-            style = MaterialTheme.typography.bodyLarge.copy(
-                fontWeight = FontWeight.Medium,
-                color = Color.Black
+        if (applications.isNotEmpty()) {
+            Text(
+                text = "Active Loans",
+                modifier = Modifier.fillMaxWidth(),
+                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.bodyLarge.copy(
+                    fontWeight = FontWeight.Medium,
+                    color = Color.Black
+                )
             )
-        )
 
-        Spacer(modifier = Modifier.height(16.dp))
-        
-        ActiveLoanCard(
-            loanName = "Salary E-Loan",
-            balance = "11,500.00",
-            monthlyPayment = "5,750.00",
-            interest = "1,500.00"
-        )
+            Spacer(modifier = Modifier.height(16.dp))
 
-        Spacer(modifier = Modifier.height(24.dp))
-        HorizontalDivider(modifier = Modifier.padding(horizontal = 48.dp), color = Color.LightGray.copy(alpha = 0.5f))
-        Spacer(modifier = Modifier.height(16.dp))
+            applications.forEach { application ->
+                val loanType = loanTypes.find { it.id == application.loanTypeId }
+                if (loanType != null) {
+                    ActiveLoanCard(
+                        loanName = loanType.name,
+                        balance = "%,.2f".format(application.amount),
+                        monthlyPayment = "%,.2f".format(application.amount / application.durationMonths),
+                        interest = "%,.2f".format(application.amount * (loanType.interestRate / 12)) // Approximation for one month
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+                }
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+            HorizontalDivider(
+                modifier = Modifier.padding(horizontal = 48.dp),
+                color = Color.LightGray.copy(alpha = 0.5f)
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+        }
 
         Text(
             text = "Other Loans Available",
@@ -91,7 +102,8 @@ fun HomeScreen(
                 .padding(horizontal = 16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            loanTypes.filter { it.name != "Salary E-Loan" }.forEach { loan ->
+            val appliedLoanIds = applications.map { it.loanTypeId }.toSet()
+            loanTypes.filter { it.id !in appliedLoanIds }.forEach { loan ->
                 LoanCard(loan = loan, onClick = { onApplyClick(loan) })
             }
         }

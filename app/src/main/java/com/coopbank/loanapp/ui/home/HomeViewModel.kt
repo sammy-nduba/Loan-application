@@ -26,6 +26,7 @@ class HomeViewModel(private val repository: LoanRepository) : ViewModel() {
     init {
         _loanTypes.value = listOf(
             LoanType(
+                id = "Salary E-Loan",
                 name = "Salary E-Loan",
                 description = "Get quick loans to boost your income",
                 longDescription = "A convenient loan for salaried individuals to meet their urgent financial needs with minimal documentation.",
@@ -37,6 +38,7 @@ class HomeViewModel(private val repository: LoanRepository) : ViewModel() {
                 features = listOf("Instant approval", "Low interest rates", "Flexible repayment", "Salary-linked installments")
             ),
             LoanType(
+                id = "Buy Now Pay Later",
                 name = "Buy Now Pay Later",
                 description = "Buy goods today, pay later",
                 longDescription = "Finance your shopping with our BNPL option and pay in easy installments at over 500 partner outlets.",
@@ -48,6 +50,7 @@ class HomeViewModel(private val repository: LoanRepository) : ViewModel() {
                 features = listOf("Partnered stores", "No hidden charges", "Easy setup", "Pay within 3-6 months")
             ),
             LoanType(
+                id = "Stock Loan",
                 name = "Stock Loan",
                 description = "Boost your business stock today",
                 longDescription = "Grow your business by restocking with our quick business financing solutions designed for SMEs.",
