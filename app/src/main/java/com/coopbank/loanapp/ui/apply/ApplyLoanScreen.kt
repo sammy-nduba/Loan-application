@@ -105,7 +105,7 @@ fun ApplyLoanScreen(
                 onOptionSelected = { viewModel.onPeriodSelected(it.toInt()) }
             )
             Text(
-                text = "Total Amount Payable: 11,500.00 KES",
+                text = "Total Amount Payable: %,.2f KES".format(uiState.totalPayable),
                 color = Color(0xFF4CAF50),
                 fontSize = 12.sp
             )
@@ -118,7 +118,7 @@ fun ApplyLoanScreen(
                 onOptionSelected = { viewModel.onAccountSelected(it) }
             )
             Text(
-                text = "Available Loan Limit: 12,000.00 KES",
+                text = "Available Loan Limit: %,.2f KES".format(uiState.loanLimit),
                 color = Color(0xFF4CAF50),
                 fontSize = 12.sp
             )
@@ -132,8 +132,9 @@ fun ApplyLoanScreen(
                 fontWeight = FontWeight.Bold
             )
             
-            RepaymentRow("1st instalment - 22 Oct 2025", "5,750.00 KES")
-            RepaymentRow("2nd instalment - 22 Nov 2025", "5,750.00 KES")
+            uiState.installments.forEach { installment ->
+                RepaymentRow(installment.label, installment.amount)
+            }
             
             Spacer(modifier = Modifier.height(32.dp))
         }

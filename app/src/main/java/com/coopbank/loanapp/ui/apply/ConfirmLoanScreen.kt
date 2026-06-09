@@ -53,12 +53,15 @@ fun ConfirmLoanScreen(
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
+            val amountValue = uiState.amount.replace(",", "").toDoubleOrNull() ?: 0.0
+            val interestValue = amountValue * uiState.interestRate
+
             // Loan Details Section
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 Text(text = "Loan Details", fontWeight = FontWeight.Bold, fontSize = 16.sp)
-                DetailRow("Loan Amount:", "${uiState.amount} KES", isAmount = true)
-                DetailRow("Interest:", "1,500.00 KES")
-                DetailRow("Total Charges:", "11,500.00 KES")
+                DetailRow("Loan Amount:", "%,.2f KES".format(amountValue), isAmount = true)
+                DetailRow("Interest:", "%,.2f KES".format(interestValue))
+                DetailRow("Total Charges:", "%,.2f KES".format(uiState.totalPayable))
                 DetailRow("Period:", "${uiState.periodMonths} Months")
             }
 
@@ -68,7 +71,7 @@ fun ConfirmLoanScreen(
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 Text(text = "Disbursement Details", fontWeight = FontWeight.Bold, fontSize = 16.sp)
                 DetailRow("Account:", uiState.disbursementAccount)
-                DetailRow("Amount:", "${uiState.amount} KES", isBold = true)
+                DetailRow("Amount:", "%,.2f KES".format(amountValue), isBold = true)
             }
 
             Divider(color = Color.LightGray, thickness = 1.dp)
@@ -76,9 +79,11 @@ fun ConfirmLoanScreen(
             // Repayment Details Section
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 Text(text = "Repayment Details", fontWeight = FontWeight.Bold, fontSize = 16.sp)
-                DetailRow("Amount:", "11,500.00 KES", isBold = true)
+                DetailRow("Amount:", "%,.2f KES".format(uiState.totalPayable), isBold = true)
                 DetailRow("Installments:", uiState.periodMonths.toString())
-                DetailRow("Next Repayment Date:", "22 Oct 2025")
+                if (uiState.installments.isNotEmpty()) {
+                    DetailRow("Next Repayment Date:", uiState.installments.first().label.split(" - ").last())
+                }
             }
         }
     }

@@ -70,7 +70,10 @@ fun LoanAppNavigation(modifier: Modifier = Modifier) {
                 LoanDetailsScreen(
                     loan = it,
                     onBack = { navController.popBackStack() },
-                    onApply = { navController.navigate("apply") }
+                    onApply = { selectedLoan ->
+                        applyLoanViewModel.setInitialLoanType(selectedLoan.name)
+                        navController.navigate("apply")
+                    }
                 )
             }
         }

@@ -53,7 +53,7 @@ fun HomeScreen(
         // Active Loans Section
         if (applications.isNotEmpty()) {
             Text(
-                text = "Active Loans",
+                text = "Available Loans",
                 modifier = Modifier.fillMaxWidth(),
                 textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.bodyLarge.copy(
