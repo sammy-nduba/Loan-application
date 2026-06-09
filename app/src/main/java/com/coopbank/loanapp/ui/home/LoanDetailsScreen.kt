@@ -65,7 +65,7 @@ fun LoanDetailsScreen(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(200.dp)
+                    .aspectRatio(16f / 9f)
                     .background(Color(loan.backgroundColor))
             ) {
                 loan.imageResId?.let { resId ->

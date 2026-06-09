@@ -47,64 +47,70 @@ fun HomeScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .background(MaterialTheme.colorScheme.background)
-                .padding(innerPadding)
                 .verticalScroll(rememberScrollState())
         ) {
             // Header
             HomeHeader()
 
-            Spacer(modifier = Modifier.height(24.dp))
+            // Main Content Area with proper padding
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = innerPadding.calculateBottomPadding())
+            ) {
+                Spacer(modifier = Modifier.height(24.dp))
 
-            // Active Loans Section
-            if (applications.isNotEmpty()) {
-                SectionTitle("Active Loans")
+                // Active Loans Section
+                if (applications.isNotEmpty()) {
+                    SectionTitle("Active Loans")
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    applications.forEach { application ->
+                        val loanType = loanTypes.find { it.id == application.loanTypeId }
+                        if (loanType != null) {
+                            ActiveLoanCard(
+                                loanName = loanType.name,
+                                balance = "%,.2f".format(application.amount),
+                                monthlyPayment = "%,.2f".format(application.amount / application.durationMonths),
+                                interest = "%,.2f".format(application.amount * (loanType.interestRate / 12))
+                            )
+                            Spacer(modifier = Modifier.height(16.dp))
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(8.dp))
+                    HorizontalDivider(
+                        modifier = Modifier.padding(horizontal = 48.dp),
+                        color = Color.LightGray.copy(alpha = 0.5f)
+                    )
+                    Spacer(modifier = Modifier.height(24.dp))
+                }
+
+                // Other Loans Available
+                SectionTitle("Available Loans")
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                applications.forEach { application ->
-                    val loanType = loanTypes.find { it.id == application.loanTypeId }
-                    if (loanType != null) {
-                        ActiveLoanCard(
-                            loanName = loanType.name,
-                            balance = "%,.2f".format(application.amount),
-                            monthlyPayment = "%,.2f".format(application.amount / application.durationMonths),
-                            interest = "%,.2f".format(application.amount * (loanType.interestRate / 12))
-                        )
-                        Spacer(modifier = Modifier.height(16.dp))
-                    }
+                Column(
+                    modifier = Modifier
+                        .padding(horizontal = 16.dp),
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    val appliedLoanIds = applications.map { it.loanTypeId }.toSet()
+
+                    loanTypes
+                        .filter { it.id !in appliedLoanIds }
+                        .forEach { loan ->
+                            LoanCard(
+                                loan = loan,
+                                onClick = { onApplyClick(loan) }
+                            )
+                        }
                 }
 
-                Spacer(modifier = Modifier.height(8.dp))
-                HorizontalDivider(
-                    modifier = Modifier.padding(horizontal = 48.dp),
-                    color = Color.LightGray.copy(alpha = 0.5f)
-                )
-                Spacer(modifier = Modifier.height(24.dp))
+                Spacer(modifier = Modifier.height(40.dp)) // Extra bottom padding
             }
-
-            // Other Loans Available
-            SectionTitle("Available Loans")
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Column(
-                modifier = Modifier
-                    .padding(horizontal = 16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                val appliedLoanIds = applications.map { it.loanTypeId }.toSet()
-
-                loanTypes
-                    .filter { it.id !in appliedLoanIds }
-                    .forEach { loan ->
-                        LoanCard(
-                            loan = loan,
-                            onClick = { onApplyClick(loan) }
-                        )
-                    }
-            }
-
-            Spacer(modifier = Modifier.height(40.dp)) // Extra bottom padding
         }
     }
 }
@@ -118,7 +124,6 @@ private fun SectionTitle(text: String) {
             .padding(horizontal = 16.dp),
         textAlign = TextAlign.Center,
         style = MaterialTheme.typography.titleLarge.copy(
-//            fontWeight = FontWeight.SemiBold,
             color = MaterialTheme.colorScheme.onBackground
         )
     )
@@ -159,23 +164,31 @@ fun HomeHeader() {
 
             Spacer(modifier = Modifier.width(16.dp))
 
-            Column {
+            Column(
+                modifier = Modifier.weight(1f),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
                 Text(
                     text = "Hello There!",
                     color = Color.White,
                     style = MaterialTheme.typography.titleLarge.copy(
                         fontWeight = FontWeight.Bold,
                         textAlign = TextAlign.Center,
-                        fontSize = 20.sp
+                        fontSize = 26.sp
                     )
                 )
                 Text(
                     text = "Boost your income today!",
                     color = Color.White.copy(alpha = 0.9f),
                     textAlign = TextAlign.Center,
-                    style = MaterialTheme.typography.bodyMedium
+                    style = MaterialTheme.typography.bodyMedium.copy(
+                        fontSize = 16.sp
+                    )
                 )
             }
+            
+            // Spacer to keep the text centered relative to the profile pic
+            Spacer(modifier = Modifier.width(72.dp))
         }
     }
 }
@@ -267,7 +280,7 @@ fun LoanCard(loan: LoanType, onClick: () -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .height(180.dp),
+            .heightIn(min = 160.dp),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(containerColor = Color(loan.backgroundColor))
     ) {
@@ -279,16 +292,16 @@ fun LoanCard(loan: LoanType, onClick: () -> Unit) {
                     modifier = Modifier
                         .align(Alignment.BottomEnd)
                         .fillMaxHeight()
-                        .width(180.dp),
+                        .widthIn(max = 180.dp),
                     contentScale = ContentScale.Fit
                 )
             }
 
             Column(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .padding(16.dp),
-                verticalArrangement = Arrangement.SpaceBetween
+                    .padding(16.dp)
+                    .widthIn(max = 200.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 Column {
                     Text(
@@ -302,7 +315,6 @@ fun LoanCard(loan: LoanType, onClick: () -> Unit) {
                     Text(
                         text = loan.description,
                         color = Color.White.copy(alpha = 0.9f),
-                        modifier = Modifier.width(180.dp),
                         style = MaterialTheme.typography.bodyMedium
                     )
                 }

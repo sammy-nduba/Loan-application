@@ -17,6 +17,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -213,20 +214,19 @@ fun ApplyLoanHeader(onBack: () -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .height(100.dp)
+            .heightIn(min = 80.dp)
             .background(
                 Brush.verticalGradient(
                     colors = listOf(Color(0xFF003322), Color(0xFF004433))
                 )
             )
             .statusBarsPadding()
-            .padding(horizontal = 16.dp),
+            .padding(horizontal = 8.dp, vertical = 8.dp),
         contentAlignment = Alignment.Center
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
         ) {
             IconButton(onClick = onBack) {
                 Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Back", tint = Color.White)
@@ -235,7 +235,9 @@ fun ApplyLoanHeader(onBack: () -> Unit) {
                 text = "Apply Loan",
                 color = Color.White,
                 fontSize = 18.sp,
-                fontWeight = FontWeight.SemiBold
+                fontWeight = FontWeight.SemiBold,
+                modifier = Modifier.weight(1f),
+                textAlign = TextAlign.Center
             )
             IconButton(onClick = onBack) {
                 Icon(imageVector = Icons.Default.Close, contentDescription = "Close", tint = Color.White)
