@@ -1,6 +1,11 @@
 plugins {
-    alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin.android)
-    alias(libs.plugins.kotlin.compose)   // ← Add this
-    alias(libs.plugins.ksp)
+    // Only declare plugins here — do NOT apply them to root
+    alias(libs.plugins.android.application) apply false
+    alias(libs.plugins.kotlin.android) apply false
+    alias(libs.plugins.kotlin.compose) apply false  // Add this too
+    alias(libs.plugins.ksp) apply false
+}
+
+tasks.register("clean", Delete::class) {
+    delete(rootProject.buildDir)
 }
