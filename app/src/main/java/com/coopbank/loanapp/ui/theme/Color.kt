@@ -9,6 +9,9 @@ val Green = Color ( 0xFF84A59D)
 val Yellow = Color ( 0xFFF7EDE2)
 val YellowLight = Color(0xFFFFFF2)
 val Dark = Color (0xFF3D405B)
+val LightGrey = Color(0xFFF5F5F5)
+val DarkSurface = Color(0xFF121212)
+val OnDarkSurface = Color(0xFFE1E1E1)
 
 @Immutable
 data class AppColors(
@@ -23,7 +26,8 @@ data class AppColors(
     val actionSurface: Color,
     val onActionSurface: Color,
     val highlightSurface: Color,
-    val onHighlightSurface: Color
+    val onHighlightSurface: Color,
+    val isDark: Boolean
 )
 
 val LocalAppColors = staticCompositionLocalOf {
@@ -39,7 +43,8 @@ val LocalAppColors = staticCompositionLocalOf {
         actionSurface = Color.Unspecified,
         onActionSurface = Color.Unspecified,
         highlightSurface = Color.Unspecified,
-        onHighlightSurface = Color.Unspecified
+        onHighlightSurface = Color.Unspecified,
+        isDark = false
     )
 }
 
@@ -55,5 +60,22 @@ val extendedColors = AppColors (
     actionSurface = Yellow,
     onActionSurface = Pink,
     highlightSurface = Green,
-    onHighlightSurface = Color.White
+    onHighlightSurface = Color.White,
+    isDark = false
+)
+
+val darkExtendedColors = AppColors(
+    background = DarkSurface,
+    onBackground = OnDarkSurface,
+    surface = Color(0xFF1E1E1E),
+    onSurface = OnDarkSurface,
+    secondarySurface = Pink.copy(alpha = 0.8f),
+    onSecondarySurface = Color.White,
+    regularSurface = Color(0xFF2C2C2C),
+    onRegularSurface = OnDarkSurface,
+    actionSurface = Color(0xFF333333),
+    onActionSurface = Pink,
+    highlightSurface = Green.copy(alpha = 0.8f),
+    onHighlightSurface = Color.White,
+    isDark = true
 )

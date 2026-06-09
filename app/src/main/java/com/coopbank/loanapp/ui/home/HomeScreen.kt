@@ -28,6 +28,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.coopbank.loanapp.R
 import com.coopbank.loanapp.domain.model.LoanStatus
 import com.coopbank.loanapp.domain.model.LoanType
+import com.coopbank.loanapp.ui.theme.isDark
 import com.coopbank.loanapp.ui.viewmodel.AppViewModelProvider
 
 @Composable
@@ -39,159 +40,88 @@ fun HomeScreen(
     val loanTypes by viewModel.loanTypes.collectAsState()
     val applications by viewModel.applications.collectAsState()
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color.White)
-            .verticalScroll(rememberScrollState())
-    ) {
-        // Header
-        HomeHeader()
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        // Active Loans Section
-        if (applications.isNotEmpty()) {
-            Text(
-                text = "Available Loans",
-                modifier = Modifier.fillMaxWidth(),
-                textAlign = TextAlign.Center,
-                style = MaterialTheme.typography.bodyLarge.copy(
-                    fontWeight = FontWeight.Medium,
-                    color = Color.Black
-                )
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            applications.forEach { application ->
-                val loanType = loanTypes.find { it.id == application.loanTypeId }
-                if (loanType != null) {
-                    ActiveLoanCard(
-                        loanName = loanType.name,
-                        balance = "%,.2f".format(application.amount),
-                        monthlyPayment = "%,.2f".format(application.amount / application.durationMonths),
-                        interest = "%,.2f".format(application.amount * (loanType.interestRate / 12)) // Approximation for one month
-                    )
-                    Spacer(modifier = Modifier.height(16.dp))
-                }
-            }
-
-            Spacer(modifier = Modifier.height(8.dp))
-            HorizontalDivider(
-                modifier = Modifier.padding(horizontal = 48.dp),
-                color = Color.LightGray.copy(alpha = 0.5f)
-            )
-            Spacer(modifier = Modifier.height(16.dp))
-        }
-
-        Text(
-            text = "Other Loans Available",
-            modifier = Modifier.fillMaxWidth(),
-            textAlign = TextAlign.Center,
-            style = MaterialTheme.typography.bodyLarge.copy(
-                fontWeight = FontWeight.Medium,
-                color = Color.Black
-            )
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
+    Scaffold(
+        containerColor = MaterialTheme.colorScheme.background
+    ) { innerPadding ->
         Column(
             modifier = Modifier
-                .padding(horizontal = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background)
+                .padding(innerPadding)
+                .verticalScroll(rememberScrollState())
         ) {
-            val appliedLoanIds = applications.map { it.loanTypeId }.toSet()
-            loanTypes.filter { it.id !in appliedLoanIds }.forEach { loan ->
-                LoanCard(loan = loan, onClick = { onApplyClick(loan) })
+            // Header
+            HomeHeader()
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            // Active Loans Section
+            if (applications.isNotEmpty()) {
+                SectionTitle("Active Loans")
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                applications.forEach { application ->
+                    val loanType = loanTypes.find { it.id == application.loanTypeId }
+                    if (loanType != null) {
+                        ActiveLoanCard(
+                            loanName = loanType.name,
+                            balance = "%,.2f".format(application.amount),
+                            monthlyPayment = "%,.2f".format(application.amount / application.durationMonths),
+                            interest = "%,.2f".format(application.amount * (loanType.interestRate / 12))
+                        )
+                        Spacer(modifier = Modifier.height(16.dp))
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(8.dp))
+                HorizontalDivider(
+                    modifier = Modifier.padding(horizontal = 48.dp),
+                    color = Color.LightGray.copy(alpha = 0.5f)
+                )
+                Spacer(modifier = Modifier.height(24.dp))
             }
+
+            // Other Loans Available
+            SectionTitle("Available Loans")
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Column(
+                modifier = Modifier
+                    .padding(horizontal = 16.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                val appliedLoanIds = applications.map { it.loanTypeId }.toSet()
+
+                loanTypes
+                    .filter { it.id !in appliedLoanIds }
+                    .forEach { loan ->
+                        LoanCard(
+                            loan = loan,
+                            onClick = { onApplyClick(loan) }
+                        )
+                    }
+            }
+
+            Spacer(modifier = Modifier.height(40.dp)) // Extra bottom padding
         }
-        
-        Spacer(modifier = Modifier.height(24.dp))
     }
 }
 
 @Composable
-fun ActiveLoanCard(
-    loanName: String,
-    balance: String,
-    monthlyPayment: String,
-    interest: String
-) {
-    Card(
+private fun SectionTitle(text: String) {
+    Text(
+        text = text,
         modifier = Modifier
-            .padding(horizontal = 16.dp)
-            .fillMaxWidth(),
-        shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
-    ) {
-        Column(
-            modifier = Modifier
-                .padding(24.dp)
-                .fillMaxWidth(),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(
-                text = "$loanName Balance",
-                color = Color(0xFF2E7D32),
-                fontWeight = FontWeight.Bold,
-                fontSize = 18.sp
-            )
-            
-            Row(verticalAlignment = Alignment.Bottom) {
-                Text(
-                    text = balance,
-                    style = MaterialTheme.typography.headlineLarge.copy(
-                        fontWeight = FontWeight.ExtraBold,
-                        color = Color(0xFF003322),
-                        fontSize = 32.sp
-                    )
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(
-                    text = "KES",
-                    fontWeight = FontWeight.Bold,
-                    color = Color(0xFF003322),
-                    modifier = Modifier.padding(bottom = 6.dp)
-                )
-            }
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceEvenly,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text(text = "Monthly Payment", color = Color.Gray, fontSize = 12.sp)
-                    Text(
-                        text = "$monthlyPayment KES",
-                        fontWeight = FontWeight.Bold,
-                        color = Color.Black,
-                        fontSize = 15.sp
-                    )
-                }
-
-                VerticalDivider(
-                    modifier = Modifier.height(40.dp),
-                    color = Color.LightGray
-                )
-
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text(text = "Interest", color = Color.Gray, fontSize = 12.sp)
-                    Text(
-                        text = "$interest KES",
-                        fontWeight = FontWeight.Bold,
-                        color = Color.Black,
-                        fontSize = 15.sp
-                    )
-                }
-            }
-        }
-    }
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp),
+        textAlign = TextAlign.Center,
+        style = MaterialTheme.typography.titleLarge.copy(
+//            fontWeight = FontWeight.SemiBold,
+            color = MaterialTheme.colorScheme.onBackground
+        )
+    )
 }
 
 @Composable
@@ -220,7 +150,7 @@ fun HomeHeader() {
                     .background(Color.White.copy(alpha = 0.2f))
             ) {
                 Image(
-                    painter = painterResource(id = R.drawable.ic_launcher_background),
+                    painter = painterResource(id = R.drawable.profile),
                     contentDescription = "Profile",
                     modifier = Modifier.fillMaxSize(),
                     contentScale = ContentScale.Crop
@@ -235,14 +165,98 @@ fun HomeHeader() {
                     color = Color.White,
                     style = MaterialTheme.typography.titleLarge.copy(
                         fontWeight = FontWeight.Bold,
-                        fontSize = 22.sp
+                        textAlign = TextAlign.Center,
+                        fontSize = 20.sp
                     )
                 )
                 Text(
                     text = "Boost your income today!",
                     color = Color.White.copy(alpha = 0.9f),
+                    textAlign = TextAlign.Center,
                     style = MaterialTheme.typography.bodyMedium
                 )
+            }
+        }
+    }
+}
+
+@Composable
+fun ActiveLoanCard(
+    loanName: String,
+    balance: String,
+    monthlyPayment: String,
+    interest: String
+) {
+    Card(
+        modifier = Modifier
+            .padding(horizontal = 16.dp)
+            .fillMaxWidth(),
+        shape = RoundedCornerShape(12.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+    ) {
+        Column(
+            modifier = Modifier
+                .padding(24.dp)
+                .fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = "$loanName Balance",
+                color = Color(0xFF2E7D32),
+                fontWeight = FontWeight.Bold,
+                fontSize = 18.sp
+            )
+
+            Row(verticalAlignment = Alignment.Bottom) {
+                Text(
+                    text = balance,
+                    style = MaterialTheme.typography.headlineLarge.copy(
+                        fontWeight = FontWeight.ExtraBold,
+                        color = if (MaterialTheme.colorScheme.isDark) Color.White else Color(0xFF003322),
+                        fontSize = 32.sp
+                    )
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = "KES",
+                    fontWeight = FontWeight.Bold,
+                    color = if (MaterialTheme.colorScheme.isDark) Color.White else Color(0xFF003322),
+                    modifier = Modifier.padding(bottom = 6.dp)
+                )
+            }
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Text(text = "Monthly Payment", color = Color.Gray, fontSize = 12.sp)
+                    Text(
+                        text = "$monthlyPayment KES",
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        fontSize = 15.sp
+                    )
+                }
+
+                VerticalDivider(
+                    modifier = Modifier.height(40.dp),
+                    color = Color.LightGray
+                )
+
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Text(text = "Interest", color = Color.Gray, fontSize = 12.sp)
+                    Text(
+                        text = "$interest KES",
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        fontSize = 15.sp
+                    )
+                }
             }
         }
     }

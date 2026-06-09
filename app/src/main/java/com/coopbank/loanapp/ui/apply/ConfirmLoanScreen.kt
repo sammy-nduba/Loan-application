@@ -31,6 +31,7 @@ fun ConfirmLoanScreen(
         topBar = {
             ApplyLoanHeader(onBack = onBack)
         },
+        containerColor = MaterialTheme.colorScheme.background,
         bottomBar = {
             Button(
                 onClick = onConfirm,
@@ -49,6 +50,7 @@ fun ConfirmLoanScreen(
             modifier = Modifier
                 .padding(innerPadding)
                 .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background)
                 .verticalScroll(rememberScrollState())
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(24.dp)
@@ -58,7 +60,7 @@ fun ConfirmLoanScreen(
 
             // Loan Details Section
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                Text(text = "Loan Details", fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                Text(text = "Loan Details", fontWeight = FontWeight.Bold, fontSize = 16.sp, color = MaterialTheme.colorScheme.onBackground)
                 DetailRow("Loan Amount:", "%,.2f KES".format(amountValue), isAmount = true)
                 DetailRow("Interest:", "%,.2f KES".format(interestValue))
                 DetailRow("Total Charges:", "%,.2f KES".format(uiState.totalPayable))
@@ -69,7 +71,7 @@ fun ConfirmLoanScreen(
 
             // Disbursement Details Section
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                Text(text = "Disbursement Details", fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                Text(text = "Disbursement Details", fontWeight = FontWeight.Bold, fontSize = 16.sp, color = MaterialTheme.colorScheme.onBackground)
                 DetailRow("Account:", uiState.disbursementAccount)
                 DetailRow("Amount:", "%,.2f KES".format(amountValue), isBold = true)
             }
@@ -78,7 +80,7 @@ fun ConfirmLoanScreen(
 
             // Repayment Details Section
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                Text(text = "Repayment Details", fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                Text(text = "Repayment Details", fontWeight = FontWeight.Bold, fontSize = 16.sp, color = MaterialTheme.colorScheme.onBackground)
                 DetailRow("Amount:", "%,.2f KES".format(uiState.totalPayable), isBold = true)
                 DetailRow("Installments:", uiState.periodMonths.toString())
                 if (uiState.installments.isNotEmpty()) {
@@ -101,7 +103,7 @@ fun DetailRow(label: String, value: String, isAmount: Boolean = false, isBold: B
             text = value,
             fontWeight = if (isAmount || isBold) FontWeight.Bold else FontWeight.Normal,
             fontSize = if (isAmount) 18.sp else 14.sp,
-            color = if (isAmount) Color(0xFF004D40) else Color.Black
+            color = if (isAmount) Color(0xFF004D40) else MaterialTheme.colorScheme.onSurface
         )
     }
 }

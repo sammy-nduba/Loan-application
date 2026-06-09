@@ -28,7 +28,8 @@ data class ApplyLoanUiState(
     val accounts: List<String> = listOf("011090145246100", "011090145246200"),
     val isSubmitted: Boolean = false,
     val totalPayable: Double = 0.0,
-    val installments: List<RepaymentInstallment> = emptyList()
+    val installments: List<RepaymentInstallment> = emptyList(),
+    val hasActiveLoan: Boolean = false
 )
 
 class ApplyLoanViewModel(private val repository: LoanRepository) : ViewModel() {
@@ -36,7 +37,17 @@ class ApplyLoanViewModel(private val repository: LoanRepository) : ViewModel() {
     val uiState: StateFlow<ApplyLoanUiState> = _uiState.asStateFlow()
 
     init {
+        checkActiveLoans()
         calculateRepayment()
+    }
+
+    private fun checkActiveLoans() {
+        viewModelScope.launch {
+            repository.getAllApplications().collect { applications ->
+                val hasActive = applications.any { it.status == LoanStatus.APPROVED || it.status == LoanStatus.PENDING }
+                _uiState.update { it.copy(hasActiveLoan = hasActive) }
+            }
+        }
     }
 
     fun setInitialLoanType(loanType: String?) {

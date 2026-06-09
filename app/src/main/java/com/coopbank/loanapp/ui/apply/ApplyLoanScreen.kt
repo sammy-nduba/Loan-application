@@ -32,10 +32,26 @@ fun ApplyLoanScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
+    if (uiState.hasActiveLoan) {
+        AlertDialog(
+            onDismissRequest = onBack,
+            confirmButton = {
+                Button(onClick = onBack, colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF7AC143))) {
+                    Text("OK")
+                }
+            },
+            title = { Text("Active Loan Found", fontWeight = FontWeight.Bold) },
+            text = { Text("You cannot apply for a new loan while still having an unpaid loan. Please clear your current loan first.") },
+            containerColor = MaterialTheme.colorScheme.surface,
+            shape = RoundedCornerShape(16.dp)
+        )
+    }
+
     Scaffold(
         topBar = {
             ApplyLoanHeader(onBack = onBack)
         },
+        containerColor = MaterialTheme.colorScheme.background,
         bottomBar = {
             Button(
                 onClick = onNext,
@@ -54,6 +70,7 @@ fun ApplyLoanScreen(
             modifier = Modifier
                 .padding(innerPadding)
                 .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background)
                 .verticalScroll(rememberScrollState())
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
