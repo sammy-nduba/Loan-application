@@ -57,6 +57,3 @@ An Android application for managing and applying for loans, built with Jetpack C
 - `app/src/main/java/com/coopbank/loanapp/data`: Data sources and Room database configuration.
 - `app/src/main/java/com/coopbank/loanapp/viewmodel`: ViewModels for state management.
 
-## Troubleshooting
-
-If you encounter resources build errors (e.g., `SAXParseException`), ensure all XML files in `res/values/` are properly terminated. (Note: A common issue in `themes.xml` where `</style>` was used instead of `</resources>` has been addressed).
