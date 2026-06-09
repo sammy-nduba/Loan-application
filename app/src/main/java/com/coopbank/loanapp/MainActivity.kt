@@ -43,7 +43,7 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun LoanAppNavigation(modifier: Modifier = Modifier) {
     val navController = rememberNavController()
-    val homeViewModel: HomeViewModel = viewModel()
+    val homeViewModel: HomeViewModel = viewModel(factory = AppViewModelProvider.Factory)
     val applyLoanViewModel: ApplyLoanViewModel = viewModel(factory = AppViewModelProvider.Factory)
     val loanTypes by homeViewModel.loanTypes.collectAsState()
 

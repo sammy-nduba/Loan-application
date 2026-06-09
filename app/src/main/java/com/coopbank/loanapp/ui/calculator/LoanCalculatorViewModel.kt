@@ -1,12 +1,12 @@
 package com.coopbank.loanapp.ui.calculator
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.coopbank.loanapp.domain.model.AmortizationEntry
 import com.coopbank.loanapp.domain.model.LoanCalculation
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
+import com.coopbank.loanapp.domain.repository.LoanRepository
+import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 import kotlin.math.pow
 
 data class CalculatorUiState(
@@ -15,13 +15,19 @@ data class CalculatorUiState(
     val durationMonths: String = "12",
     val calculationResult: LoanCalculation? = null,
     val amortizationSchedule: List<AmortizationEntry> = emptyList(),
-    val history: List<LoanCalculation> = emptyList(),
-    val savedCalculations: List<LoanCalculation> = emptyList()
+    val history: List<LoanCalculation> = emptyList()
 )
 
-class LoanCalculatorViewModel : ViewModel() {
+class LoanCalculatorViewModel(private val repository: LoanRepository) : ViewModel() {
     private val _uiState = MutableStateFlow(CalculatorUiState())
     val uiState: StateFlow<CalculatorUiState> = _uiState.asStateFlow()
+
+    val savedCalculations: StateFlow<List<LoanCalculation>> = repository.getSavedCalculations()
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = emptyList()
+        )
 
     fun onAmountChange(value: String) {
         _uiState.update { it.copy(amount = value) }
@@ -67,19 +73,16 @@ class LoanCalculatorViewModel : ViewModel() {
 
     fun saveCurrentCalculation() {
         _uiState.value.calculationResult?.let { current ->
-            val savedCalc = current.copy(isSaved = true)
-            _uiState.update { it.copy(
-                savedCalculations = (listOf(savedCalc) + it.savedCalculations).distinctBy { c -> 
-                    "${c.amount}-${c.interestRate}-${c.durationMonths}" 
-                }
-            ) }
+            viewModelScope.launch {
+                repository.saveCalculation(current.copy(isSaved = true))
+            }
         }
     }
 
     fun deleteSavedCalculation(calculation: LoanCalculation) {
-        _uiState.update { it.copy(
-            savedCalculations = it.savedCalculations.filter { c -> c.id != calculation.id }
-        ) }
+        viewModelScope.launch {
+            repository.deleteCalculation(calculation)
+        }
     }
 
     private fun generateAmortizationSchedule(

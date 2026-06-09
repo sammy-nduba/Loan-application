@@ -6,8 +6,9 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.coopbank.loanapp.data.local.entity.LoanApplicationEntity
+import com.coopbank.loanapp.data.local.entity.LoanCalculationEntity
 
-@Database(entities = [LoanApplicationEntity::class], version = 1, exportSchema = false)
+@Database(entities = [LoanApplicationEntity::class, LoanCalculationEntity::class], version = 1, exportSchema = false)
 @TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun loanDao(): LoanDao

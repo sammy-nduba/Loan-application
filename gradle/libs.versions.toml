@@ -1,19 +1,19 @@
 [versions]
-agp = "8.5.2"
+agp = "8.6.0"
 coreKtx = "1.10.1"
 junit = "4.13.2"
 junitVersion = "1.1.5"
 espressoCore = "3.5.1"
 lifecycleRuntimeKtx = "2.6.1"
 activityCompose = "1.8.0"
-kotlin = "1.9.24"
+kotlin = "2.0.21"
 composeBom = "2026.02.01"
 runtimeAnnotation = "1.11.2"
 navigationCompose = "2.9.8"
 lifecycleViewmodelCompose = "2.10.0"
 navigationRuntimeKtx = "2.9.8"
 room = "2.6.1"
-ksp = "1.9.24-1.0.20"
+ksp = "2.0.21-1.0.25"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }

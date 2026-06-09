@@ -25,11 +25,13 @@ import com.coopbank.loanapp.domain.model.AmortizationEntry
 import com.coopbank.loanapp.domain.model.LoanCalculation
 import java.text.DecimalFormat
 
+import com.coopbank.loanapp.ui.viewmodel.AppViewModelProvider
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoanCalculatorScreen(
     onBack: () -> Unit,
-    viewModel: LoanCalculatorViewModel = viewModel()
+    viewModel: LoanCalculatorViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
     val uiState by viewModel.uiState.collectAsState()
     var selectedTab by remember { mutableIntStateOf(0) }
